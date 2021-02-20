@@ -28,18 +28,16 @@ import * as MoodRepo from './ports/repositories/Mood.js'
  */
 export const render_home = [
   EVENTS.RENDER_HOME,
-  () => {
-    // we respond to the request with a pug response
-    System.trigger(respond_to_request(), pug('home', { title: 'Home Page' }))
-  },
+  // we respond to the request with a pug response
+  () =>
+    System.trigger(respond_to_request(), pug('home', { title: 'Home Page' })),
 ]
 
 export const render_not_found = [
   EVENTS.RENDER_NOT_FOUND,
-  () => {
-    // we respond to the request with a pug response
-    System.trigger(respond_to_request(), pug('404', { title: 'Not Found' }))
-  },
+  // we respond to the request with a pug response
+  () =>
+    System.trigger(respond_to_request(), pug('404', { title: 'Not Found' })),
 ]
 
 /**
@@ -47,8 +45,8 @@ export const render_not_found = [
  */
 export const render_api = [
   EVENTS.RENDER_API,
-  () => {
-    // we respond with a json response
+  // we respond with a json response
+  () =>
     System.trigger(
       respond_to_request(),
       json({
@@ -57,10 +55,14 @@ export const render_api = [
           message: 'You really made it!',
         },
       })
-    )
-  },
+    ),
 ]
 
+/**
+ * We can get fancy with it as well and use the Context
+ * to get values we need from the system and to send a
+ * response back through the port
+ */
 export const record_mood = [
   EVENTS.RECORD_MOOD,
   async () => {
@@ -81,16 +83,21 @@ export const record_mood = [
 export const read_mood = [
   EVENTS.READ_MOOD,
   async () => {
-    const { params } = Context.get(SYSTEM_CTX_PATH)
-    const { id } = params
-    const data = await MoodRepo.getById(id)
+    try {
+      const { params } = Context.get(SYSTEM_CTX_PATH)
+      const { id } = params
+      const data = await MoodRepo.getById(id)
 
-    System.trigger(
-      respond_to_request(),
-      json({
-        status: 200,
-        data,
-      })
-    )
+      System.trigger(
+        respond_to_request(),
+        json({
+          status: 200,
+          data,
+        })
+      )
+    } catch (e) {
+      console.log(e)
+      System.trigger(respond_to_request(), pug('404', { title: 'Not Found' }))
+    }
   },
 ]
