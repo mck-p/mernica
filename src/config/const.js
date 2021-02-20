@@ -19,8 +19,15 @@ export const VERSION = '1.0.0'
  * of the System at large
  */
 export const SYSTEM_CTX_PATH = 'system'
+
+/**
+ * How we cna look into the global context for the context
+ * of the Server and its Current Request
+ */
 export const SERVER_PATH = 'server'
-export const REQUEST_PATH = 'server.request'
+export const REQUEST_PATH = `${SERVER_PATH}.request`
+export const REQUEST_CONTEXT_PATH = `${REQUEST_PATH}.ctx`
+export const PATH_OF_REQUEST_PATH = `${REQUEST_CONTEXT_PATH}.path`
 
 export const EVENTS = {
   SYSTEM_STARTUP: 'system::startup',
