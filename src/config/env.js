@@ -7,7 +7,7 @@
 /**
  * Ensures that a value is available from the process environment
  * or it throws an error
- * 
+ *
  * @param {string} key The key from process.env to get
  * @param {*} fallback The fallback value to use. If undefined, will be treated as not given
  */
@@ -37,6 +37,17 @@ export const ensure_bool = (key, fallback) => {
   return Boolean(value)
 }
 
+export const ensure_number = (key, fallback) => {
+  const value = ensure(key, fallback)
+  const num = Number(value)
+
+  if (Number.isNaN(num)) {
+    throw new Error('Cannot turn NaN into Number')
+  }
+
+  return num
+}
+
 export const node_env = ensure('NODE_ENV', 'development')
 export const is_prod = node_env === 'production'
 export const is_stage = node_env === 'staging'
@@ -49,3 +60,5 @@ export const jwt_secret = ensure('JWT_SECRET')
 export const cookie_secret = ensure('COOKIE_SECRET')
 
 export const bus_errors_are_fatal = ensure_bool('FATAL_BUS_ERRORS')
+
+export const request_timeout = ensure_number('REQUEST_TIMEOUT_MS')
