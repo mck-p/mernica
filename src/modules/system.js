@@ -5,7 +5,7 @@ import { VERSION, SYSTEM_CTX_PATH, EVENTS } from '../config/const.js'
 import * as Errors from '../utils/errors.js'
 import * as Context from './context.js'
 
-import Server from './ports/http/index.js'
+import Server from './adapters/http/index.js'
 
 class System {
   #server
