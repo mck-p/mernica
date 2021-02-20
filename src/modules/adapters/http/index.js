@@ -1,5 +1,6 @@
 import Koa from 'koa'
 import KoaLogger from 'koa-pino-logger'
+import BodyParser from 'koa-bodyparser'
 import { v4 as uuid } from 'uuid'
 import * as Env from '../../../config/env.js'
 import { EVENTS, SERVER_PATH, REQUEST_PATH } from '../../../config/const.js'
@@ -143,6 +144,7 @@ const setup_server = ({ server, logger, bus }) =>
       ctx.set('X-Request-Time', Date.now() - start)
     })
     .use(set_ctx())
+    .use(BodyParser())
     .use(KoaLogger({ logger }))
     .use(Renderer())
     .use(await_bus({ logger, bus }))

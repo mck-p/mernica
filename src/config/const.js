@@ -40,4 +40,8 @@ export const EVENTS = {
 
   RENDER_HOME: 'render::pug::home',
   RENDER_API: 'render::json::api',
+  RENDER_NOT_FOUND: 'render::not::found',
+
+  RECORD_MOOD: 'record::new::mood',
+  READ_MOOD: 'read::mood',
 }
