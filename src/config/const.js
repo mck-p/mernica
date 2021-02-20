@@ -32,8 +32,12 @@ export const PATH_OF_REQUEST_PATH = `${REQUEST_CONTEXT_PATH}.path`
 export const EVENTS = {
   SYSTEM_STARTUP: 'system::startup',
   SYSTEM_STOP: 'system::stop',
+
   SERVER_INCOMING_REQUEST: 'server::incoming::request',
   SERVER_RESPOND_TO_REQUEST: 'server::incomfing::request::response',
   SERVER_KICKOFF_DEMO: 'server::kickoff::demo',
   SERVER_SECOND_REQUEST: 'server::second::request',
+
+  RENDER_HOME: 'render::pug::home',
+  RENDER_API: 'render::json::api',
 }

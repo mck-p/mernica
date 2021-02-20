@@ -2,14 +2,9 @@ import Koa from 'koa'
 import KoaLogger from 'koa-pino-logger'
 import { v4 as uuid } from 'uuid'
 import * as Env from '../../../config/env.js'
-import {
-  EVENTS,
-  SERVER_PATH,
-  REQUEST_PATH,
-  REQUEST_CONTEXT_PATH,
-} from '../../../config/const.js'
+import { EVENTS, SERVER_PATH, REQUEST_PATH } from '../../../config/const.js'
 import { ERROR_NAMES_BY_CODE } from '../../../utils/errors.js'
-import { respond_to_request } from '../../../utils/events.js'
+import { respond_to_request } from './utils.js'
 
 import * as Context from '../../context.js'
 import Renderer from '../../renderer.js'

@@ -1,7 +1,5 @@
 import System from './src/modules/system.js'
-import { EVENTS, REQUEST_PATH, SYSTEM_CTX_PATH } from './src/config/const.js'
-import * as Context from './src/modules/context.js'
-import { json } from './src/utils/responses.js'
+import * as ApplicationEventHandlers from './src/modules/events.js'
 
 System.setContext({
   admin: {
@@ -11,26 +9,34 @@ System.setContext({
     },
   },
 })
-  .when(EVENTS.SERVER_KICKOFF_DEMO, () => {
-    const { ctx, request_id } = Context.get(REQUEST_PATH)
 
-    System.trigger(
-      `${EVENTS.SERVER_RESPOND_TO_REQUEST}:${request_id}`,
-      json({
-        status: 201,
-        data: {
-          message: 'You caused an event to trigger another event!',
-          ctx: {
-            handler: ctx.handler,
-            params: ctx.params,
-          },
-        },
-        headers: {
-          'X-Num-Events': 2,
-        },
-      })
-    )
-  })
-  .start(() => {
-    System.log.trace('System started')
-  })
+// If you want to use the KICKOFF Demo handler
+// System.when(EVENTS.SERVER_KICKOFF_DEMO, () => {
+//   const { ctx, request_id } = Context.get(REQUEST_PATH)
+
+//   System.trigger(
+//     `${EVENTS.SERVER_RESPOND_TO_REQUEST}:${request_id}`,
+//     json({
+//       status: 201,
+//       data: {
+//         message: 'You caused an event to trigger another event!',
+//         ctx: {
+//           handler: ctx.handler,
+//           params: ctx.params,
+//         },
+//       },
+//       headers: {
+//         'X-Num-Events': 2,
+//       },
+//     })
+//   )
+// })
+
+// If you want to use the Handlers Mappings
+for (const [event, handler] of Object.values(ApplicationEventHandlers)) {
+  System.when(event, handler)
+}
+
+System.start(() => {
+  System.log.trace('System started')
+})
