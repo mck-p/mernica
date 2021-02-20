@@ -1,15 +1,17 @@
 import Koa from 'koa'
 import KoaLogger from 'koa-pino-logger'
-import * as Env from '../../config/env.js'
+import * as Env from '../../../config/env.js'
 import {
   SYSTEM_CTX_PATH,
   EVENTS,
   SERVER_PATH,
   REQUEST_PATH,
-} from '../../config/const.js'
-import { ERROR_NAMES_BY_CODE } from '../../utils/errors.js'
-import * as Context from '../context.js'
-import Renderer from '../renderer.js'
+} from '../../../config/const.js'
+import { ERROR_NAMES_BY_CODE } from '../../../utils/errors.js'
+import * as Context from '../../context.js'
+import Renderer from '../../renderer.js'
+
+import RequestHandler from './request-handler.js'
 
 const error_handler = ({ logger }) => async (ctx, next) => {
   try {
@@ -118,6 +120,11 @@ const register = ({ bus, logger, start, stop }) => {
 
     await new Promise((res) => stop(res))
   })
+
+  /**
+   * Listen for any incoming requests
+   */
+  bus.on(EVENTS.SERVER_INCOMING_REQUEST, RequestHandler)
 }
 
 /**

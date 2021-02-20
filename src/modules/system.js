@@ -5,7 +5,7 @@ import { VERSION, SYSTEM_CTX_PATH, EVENTS } from '../config/const.js'
 import * as Errors from '../utils/errors.js'
 import * as Context from './context.js'
 
-import Server from './ports/http.js'
+import Server from './ports/http/index.js'
 
 class System {
   #server
@@ -34,8 +34,6 @@ class System {
   }
 
   start(cb) {
-    Context.set(SYSTEM_CTX_PATH, this.#context)
-
     this.trigger(EVENTS.SYSTEM_STARTUP)
 
     process.nextTick(cb)
@@ -44,8 +42,6 @@ class System {
   }
 
   stop(cb) {
-    Context.set(SYSTEM_CTX_PATH, this.#context)
-
     this.trigger(EVENTS.SYSTEM_STOP)
 
     process.nextTick(cb)
@@ -54,6 +50,8 @@ class System {
   }
 
   trigger(event, ...args) {
+    Context.set(SYSTEM_CTX_PATH, this.#context)
+
     this.#events.emit(event, ...args)
 
     return this

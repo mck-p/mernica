@@ -34,4 +34,5 @@ export const EVENTS = {
   SYSTEM_STOP: 'system::stop',
   SERVER_INCOMING_REQUEST: 'server::incoming::request',
   SERVER_RESPOND_TO_REQUEST: 'server::incomfing::request::response',
+  SERVER_KICKOFF_DEMO: 'server::kickoff::demo',
 }
