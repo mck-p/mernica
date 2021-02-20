@@ -1,5 +1,6 @@
 import R from 'ramda'
 import EE from 'events'
+import { v4 as uuid } from 'uuid'
 import Log from '../utils/log.js'
 import { VERSION, SYSTEM_CTX_PATH, EVENTS } from '../config/const.js'
 import * as Errors from '../utils/errors.js'
@@ -33,7 +34,7 @@ class System {
     return this
   }
 
-  start(cb) {
+  start(cb = () => {}) {
     this.trigger(EVENTS.SYSTEM_STARTUP)
 
     process.nextTick(cb)
@@ -41,7 +42,7 @@ class System {
     return this
   }
 
-  stop(cb) {
+  stop(cb = () => {}) {
     this.trigger(EVENTS.SYSTEM_STOP)
 
     process.nextTick(cb)
@@ -52,21 +53,45 @@ class System {
   trigger(event, ...args) {
     Context.set(SYSTEM_CTX_PATH, this.#context)
 
+    this.#logger.trace({ event, args }, 'Triggering Event')
+
     this.#events.emit(event, ...args)
 
     return this
   }
 
   when(event, fn) {
+    this.#logger.trace({ event, fn }, 'Regsitering Event Handler')
     this.#events.on(event, fn)
 
     return this
   }
 
   once(event, fn) {
+    this.#logger.trace({ event, fn }, 'Regsitering a Once Handler')
     this.#events.once(event, fn)
 
     return this
+  }
+
+  trace(fn, name) {
+    return (...args) => {
+      const id = uuid()
+
+      this.#logger.trace(
+        { function_name: `${name}::HANDLER`, id },
+        'Calling function'
+      )
+
+      const value = fn(...args)
+
+      this.#logger.trace(
+        { function_name: `${name}::HANDLER`, value },
+        'Function finished'
+      )
+
+      return value
+    }
   }
 }
 
