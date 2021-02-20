@@ -1,13 +1,16 @@
 import Koa from 'koa'
 import KoaLogger from 'koa-pino-logger'
+import { v4 as uuid } from 'uuid'
 import * as Env from '../../../config/env.js'
 import {
-  SYSTEM_CTX_PATH,
   EVENTS,
   SERVER_PATH,
   REQUEST_PATH,
+  REQUEST_CONTEXT_PATH,
 } from '../../../config/const.js'
 import { ERROR_NAMES_BY_CODE } from '../../../utils/errors.js'
+import { respond_to_request } from '../../../utils/events.js'
+
 import * as Context from '../../context.js'
 import Renderer from '../../renderer.js'
 
@@ -35,11 +38,19 @@ const error_handler = ({ logger }) => async (ctx, next) => {
 }
 
 const set_ctx = () => async (ctx, next) => {
+  ctx.request_id = uuid()
+  ctx.set('X-Request-ID', ctx.request_id)
   // Set the context for anyone that cares
   Context.set(SERVER_PATH, {})
-  Context.set(REQUEST_PATH, { ctx })
 
-  await next()
+  Context.set(REQUEST_PATH, {
+    ctx,
+    request_id: ctx.request_id,
+  })
+
+  await Context.run(async () => {
+    await next()
+  })
 }
 
 const await_bus = ({ bus, logger }) => async (ctx) => {
@@ -47,9 +58,8 @@ const await_bus = ({ bus, logger }) => async (ctx) => {
     // ensure we respond within TIMEOUT
     let responded = false
     const REQUEST_TIMEOUT = Env.request_timeout
-
     // The first person to response wins!
-    bus.once(EVENTS.SERVER_RESPOND_TO_REQUEST, (tuple) => {
+    bus.once(respond_to_request(), (tuple) => {
       responded = true
 
       logger.trace({ tuple }, 'System responding')
@@ -104,9 +114,6 @@ const register = ({ bus, logger, start, stop }) => {
    * start listening and open our port
    */
   bus.once(EVENTS.SYSTEM_STARTUP, async () => {
-    const ctx = Context.get(SYSTEM_CTX_PATH)
-    logger.trace({ ctx }, 'Starting Server with context')
-
     await new Promise((res) => start(res))
   })
 
@@ -115,9 +122,6 @@ const register = ({ bus, logger, start, stop }) => {
    * stop listening and close our port
    */
   bus.once(EVENTS.SYSTEM_STOP, async () => {
-    const ctx = Context.get(SYSTEM_CTX_PATH)
-    logger.trace({ ctx }, 'Stopping Server with context')
-
     await new Promise((res) => stop(res))
   })
 
@@ -136,6 +140,13 @@ const register = ({ bus, logger, start, stop }) => {
 const setup_server = ({ server, logger, bus }) =>
   server
     .use(error_handler({ logger }))
+    .use(async (ctx, next) => {
+      const start = Date.now()
+
+      await next()
+
+      ctx.set('X-Request-Time', Date.now() - start)
+    })
     .use(set_ctx())
     .use(KoaLogger({ logger }))
     .use(Renderer())

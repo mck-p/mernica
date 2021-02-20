@@ -17,7 +17,8 @@
     "path-to-regexp": "^6.2.0",
     "pino": "^6.11.1",
     "pug": "^3.0.0",
-    "ramda": "^0.27.1"
+    "ramda": "^0.27.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "dotenv-flow": "^3.2.0",

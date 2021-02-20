@@ -1,5 +1,5 @@
 import System from './src/modules/system.js'
-import { EVENTS, SYSTEM_CTX_PATH } from './src/config/const.js'
+import { EVENTS, REQUEST_PATH, SYSTEM_CTX_PATH } from './src/config/const.js'
 import * as Context from './src/modules/context.js'
 import { json } from './src/utils/responses.js'
 
@@ -12,10 +12,10 @@ System.setContext({
   },
 })
   .when(EVENTS.SERVER_KICKOFF_DEMO, () => {
-    const ctx = Context.get(SYSTEM_CTX_PATH)
+    const { ctx, request_id } = Context.get(REQUEST_PATH)
 
     System.trigger(
-      EVENTS.SERVER_RESPOND_TO_REQUEST,
+      `${EVENTS.SERVER_RESPOND_TO_REQUEST}:${request_id}`,
       json({
         status: 201,
         data: {

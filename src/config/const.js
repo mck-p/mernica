@@ -35,4 +35,5 @@ export const EVENTS = {
   SERVER_INCOMING_REQUEST: 'server::incoming::request',
   SERVER_RESPOND_TO_REQUEST: 'server::incomfing::request::response',
   SERVER_KICKOFF_DEMO: 'server::kickoff::demo',
+  SERVER_SECOND_REQUEST: 'server::second::request',
 }

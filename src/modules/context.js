@@ -33,3 +33,5 @@ export const set = (path, value) =>
  * @returns {Object<string, *>}
  */
 export const read = () => ctx.getStore()
+
+export const run = (fn) => ctx.run(read(), fn)
